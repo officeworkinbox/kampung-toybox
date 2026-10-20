@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · Kampung Toybox</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧸</text></svg>">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="logo">🧸</span><span>Kampung Toybox<small>pass on the joy, neighbour to neighbour</small></span></a>
+    <% if (user && user.verified_at) { %>
+      <span class="area-chip" title="You can only see and request toys in your planning area">📍 <%= user.planning_area %></span>
+    <% } %>
+    <nav class="nav" aria-label="Main">
+      <% if (user) { %>
+        <% if (user.verified_at) { %>
+          <a href="/toys" class="<%= path === '/toys' ? 'active' : '' %>">Browse</a>
+          <a href="/toys/new" class="<%= path === '/toys/new' ? 'active' : '' %>">Share a toy</a>
+          <a href="/me" class="<%= path === '/me' ? 'active' : '' %>">My Kampung</a>
+          <% if (myTier) { %><a href="/tiers" title="Your tier"><%- include('tier-badge', { tier: myTier.tier }) %></a><% } %>
+        <% } %>
+        <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike nav-btn" type="submit" style="padding:.45rem .75rem;font-weight:700">Log out</button></form>
+      <% } else { %>
+        <a href="/login">Log in</a>
+        <a href="/signup" class="btn small">Join your kampung</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<main>
+<div class="wrap">
+<% if (flash) { %><div class="flash <%= flash.type %>" role="status"><%= flash.message %></div><% } %>

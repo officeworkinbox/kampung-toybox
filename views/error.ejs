@@ -1,0 +1,8 @@
+<%- include('partials/head') %>
+<div class="card narrow empty">
+  <div class="big"><%= status === 404 ? '🧭' : status === 403 ? '🔒' : '🧸' %></div>
+  <h1><%= status === 404 ? 'Not in this kampung' : "Hmm, that didn't work" %></h1>
+  <p class="muted"><%= message %></p>
+  <a class="btn secondary" href="/">Back home</a>
+</div>
+<%- include('partials/foot') %>

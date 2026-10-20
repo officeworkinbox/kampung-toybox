@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+<h1>Kampung tiers 🌱→🌟</h1>
+<p class="muted">Tiers celebrate what you give to the community. They're earned through completed handovers and kind feedback, never bought, and they show up next to your name so families and givers know who they're dealing with.</p>
+
+<div class="card sun" style="margin-bottom:1.25rem">
+  <%- include('partials/progress', { trust, heading: 'You are' }) %>
+</div>
+
+<div class="card table-scroll">
+  <table class="tier-table">
+    <thead>
+      <tr><th>Tier</th><th>Toys given</th><th>Completed handovers</th><th>Kudos</th><th>Rating</th><th>Open requests allowed</th></tr>
+    </thead>
+    <tbody>
+      <% TIERS.forEach(t => { %>
+        <tr class="<%= t.key === trust.tier.key ? 'current' : '' %>">
+          <td><%- include('partials/tier-badge', { tier: t }) %><div class="small muted" style="margin-top:.3rem"><%= t.blurb %></div></td>
+          <td><%= t.given %></td>
+          <td><%= t.handovers %></td>
+          <td><%= t.kudos %></td>
+          <td><%= t.minRating ? '≥ ' + t.minRating + '★' : '—' %></td>
+          <td><%= t.requestLimit %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="margin-top:1.25rem">
+  <h2>The fine print</h2>
+  <ul>
+    <li><strong>Toys given</strong> counts handovers you confirmed as the giver with the recipient's code.</li>
+    <li><strong>Completed handovers</strong> counts confirmed handovers in either role, giving or receiving.</li>
+    <li><strong>Kudos</strong> counts <em>different</em> neighbours who rated you 4★ or 5★, so one friend can't rate you up repeatedly.</li>
+    <li>From Kind Neighbour up, your average rating must stay at <strong>4.0★ or more</strong> once you have 3 reviews.</li>
+    <li>Everyone can receive up to <strong><%= RULES.RECEIVE_MAX_IN_WINDOW %> toys per <%= RULES.RECEIVE_WINDOW_DAYS %> days</strong>, whatever their tier, so blessings spread around.</li>
+  </ul>
+</div>
+<%- include('partials/foot') %>

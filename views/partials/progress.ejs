@@ -1,0 +1,22 @@
+<div class="tier-hero-card">
+  <div class="icon" aria-hidden="true"><%= trust.tier.icon %></div>
+  <div>
+    <div class="muted small" style="font-weight:800;text-transform:uppercase;letter-spacing:.06em"><%= heading %></div>
+    <h2 style="margin:0"><%= trust.tier.name %></h2>
+    <p class="muted" style="margin:0"><%= trust.tier.blurb %></p>
+  </div>
+</div>
+<% if (trust.next) { %>
+  <div class="stack" style="margin-top:1rem">
+    <p style="margin:0"><strong>Next up: <%= trust.next.icon %> <%= trust.next.name %></strong> <span class="muted small">(<%= trust.overallPct %>% of the way)</span></p>
+    <% trust.progress.forEach(p => { %>
+      <div>
+        <div class="progress-label"><span><%= p.label %></span><span><%= Math.min(p.have, p.need) %> / <%= p.need %><%= p.have >= p.need ? ' ✓' : '' %></span></div>
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= p.pct %>" aria-label="<%= p.label %>"><span style="width:<%= p.pct %>%"></span></div>
+      </div>
+    <% }) %>
+    <% if (trust.ratingBlocked) { %><p class="small" style="color:var(--coral-dark);font-weight:700">Your average rating needs to be at least <%= trust.next.minRating %>★ to reach the next tier.</p><% } %>
+  </div>
+<% } else { %>
+  <p style="margin-top:1rem"><strong>You've reached the highest tier. Thank you! 🌟</strong></p>
+<% } %>

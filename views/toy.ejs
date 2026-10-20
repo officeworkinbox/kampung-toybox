@@ -1,0 +1,137 @@
+<%- include('partials/head') %>
+<p class="small"><a href="/toys">← Back to <%= user.planning_area %></a></p>
+<div class="toy-layout">
+  <div class="gallery">
+    <% if (photos.length) { %>
+      <img class="main" src="/photos/<%= photos[0].id %>" alt="Photo of <%= toy.title %>">
+      <% if (photos.length > 1) { %>
+        <div class="thumbs">
+          <% photos.forEach((p, i) => { %><img src="/photos/<%= p.id %>" alt="Photo <%= i + 1 %>" class="<%= i === 0 ? 'active' : '' %>"><% }) %>
+        </div>
+      <% } %>
+    <% } else { %><div class="main"></div><% } %>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="tags" style="margin-bottom:.5rem">
+        <span class="tag"><%= toy.age_range %></span>
+        <span class="tag cond"><%= toy.condition %></span>
+        <span class="tag status-<%= toy.status %>"><%= toy.status %></span>
+        <% if (toy.hidden_at) { %><span class="tag status-declined">hidden after reports</span><% } %>
+      </div>
+      <h1><%= toy.title %></h1>
+      <p style="white-space:pre-wrap"><%= toy.description %></p>
+      <div class="row small muted">
+        <span>Given by <% if (isGiver) { %><strong>you</strong><% } else { %><a href="/neighbours/<%= toy.giver_id %>"><strong><%= toy.giver_name %></strong></a><% } %></span>
+        <%- include('partials/tier-badge', { tier: giver.tier }) %>
+        <span>· <%= giver.stats.given %> given · <%= giver.stats.avgRating ? giver.stats.avgRating + '★' : 'no ratings yet' %></span>
+      </div>
+    </div>
+
+    <% if (isGiver) { %>
+      <!-- ===== Giver view: review requests ===== -->
+      <div class="card">
+        <h2>Families asking for this toy</h2>
+        <% if (!requests.length) { %>
+          <p class="muted">No requests yet. Neighbours in <%= toy.planning_area %> can see your toy now.</p>
+        <% } %>
+        <% requests.forEach(r => { %>
+          <div class="request-item">
+            <div class="row spread">
+              <div class="row">
+                <a href="/neighbours/<%= r.requester_id %>"><strong><%= r.display_name %></strong></a>
+                <%- include('partials/tier-badge', { tier: r.trust.tier }) %>
+              </div>
+              <span class="tag status-<%= r.status %>"><%= r.status.replace('_', ' ') %></span>
+            </div>
+            <div class="trust-line" style="margin-top:.3rem">
+              <span>✅ Verified in <%= toy.planning_area %></span>
+              <span>🤝 <%= r.trust.stats.handovers %> handovers</span>
+              <span>⭐ <%= r.trust.stats.avgRating ? r.trust.stats.avgRating + ' (' + r.trust.stats.reviews + ')' : 'no ratings' %></span>
+              <span>🎁 received <%= r.trust.stats.received %></span>
+              <% if (r.trust.stats.noShows) { %><span style="color:var(--coral-dark)">⚠ <%= r.trust.stats.noShows %> no-show<%= r.trust.stats.noShows > 1 ? 's' : '' %></span><% } %>
+              <span>Member since <%= r.member_since.slice(0, 10) %></span>
+            </div>
+            <div class="note"><%= r.note %></div>
+            <% if (r.status === 'pending' && toy.status === 'available') { %>
+              <div class="row">
+                <form method="post" action="/requests/<%= r.id %>/approve"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn leaf small" type="submit">Approve this family</button></form>
+                <form method="post" action="/requests/<%= r.id %>/decline"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn secondary small" type="submit">Decline</button></form>
+              </div>
+            <% } else if (r.status === 'approved') { %>
+              <div class="card leafy tight stack">
+                <strong>Handover with <%= r.display_name %></strong>
+                <p class="small" style="margin:0">📧 Contact: <a href="mailto:<%= r.email %>"><%= r.email %></a> <span class="muted">(shared only with the family you approved)</span></p>
+                <p class="small" style="margin:0">Arrange a time to meet. When you hand the toy over, ask them for the 6-digit code on their My Kampung page and enter it here. That confirms the blessing reached the right family.</p>
+                <form method="post" action="/requests/<%= r.id %>/complete" class="row">
+                  <input type="hidden" name="_csrf" value="<%= csrf %>">
+                  <input type="text" name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6-digit code" aria-label="Handover code" style="max-width:170px" required>
+                  <button class="btn leaf small" type="submit">Confirm handover</button>
+                </form>
+                <div class="row">
+                  <form method="post" action="/requests/<%= r.id %>/release"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="reason" value="release"><button class="btn ghost small" type="submit">Plans changed, release</button></form>
+                  <form method="post" action="/requests/<%= r.id %>/release" data-confirm="Mark <%= r.display_name %> as a no-show? This counts against their record."><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="reason" value="no_show"><button class="btn ghost small" type="submit">They didn't show up</button></form>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+      <% if (toy.status === 'available') { %>
+        <form method="post" action="/toys/<%= toy.id %>/withdraw" data-confirm="Withdraw this toy? Pending requests will be declined.">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <button class="btn ghost small" type="submit">Withdraw this listing</button>
+        </form>
+      <% } %>
+
+    <% } else if (mine) { %>
+      <!-- ===== Requester view: my request status ===== -->
+      <div class="card <%= mine.status === 'approved' ? 'leafy' : '' %>">
+        <h2>Your request</h2>
+        <p><span class="tag status-<%= mine.status %>"><%= mine.status.replace('_', ' ') %></span></p>
+        <div class="note"><%= mine.note %></div>
+        <% if (mine.status === 'pending') { %>
+          <p class="muted small"><%= toy.giver_name %> will read your note and reply. You'll see the update on My Kampung.</p>
+        <% } else if (mine.status === 'approved') { %>
+          <p><strong><%= toy.giver_name %> chose your family! 🎉</strong> Arrange a meet-up, then show this code when you collect the toy:</p>
+          <div class="code-box" aria-label="Handover code"><%= mine.handover_code %></div>
+          <p class="small" style="margin:.6rem 0 0">📧 Contact <%= toy.giver_name %>: <a href="mailto:<%= toy.giver_email %>"><%= toy.giver_email %></a></p>
+        <% } else if (mine.status === 'completed') { %>
+          <p>Handover complete. Enjoy! Remember to leave feedback on <a href="/me">My Kampung</a>.</p>
+        <% } else { %>
+          <p class="muted small">This request is closed.</p>
+        <% } %>
+        <% if (['pending', 'approved'].includes(mine.status)) { %>
+          <form method="post" action="/requests/<%= mine.id %>/cancel"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn ghost small" type="submit">Cancel my request</button></form>
+        <% } %>
+      </div>
+
+    <% } else { %>
+      <!-- ===== Neighbour view: ask for the toy ===== -->
+      <div class="card">
+        <h2>Ask for this toy</h2>
+        <% if (eligibility && eligibility.ok) { %>
+          <p class="muted small">Tell <%= toy.giver_name %> who it's for and why. Givers read every note and choose the family themselves.</p>
+          <form method="post" action="/toys/<%= toy.id %>/request">
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
+            <div class="field <%= noteError ? 'has-error' : '' %>">
+              <label for="note">Your note</label>
+              <textarea id="note" name="note" data-min="<%= RULES.NOTE_MIN %>" maxlength="<%= RULES.NOTE_MAX %>" placeholder="My 4-year-old has just started loving trains. We live two blocks away and can collect any evening." required><%= noteValue %></textarea>
+              <div class="hint" data-counter-for="note"></div>
+              <% if (noteError) { %><div class="error"><%= noteError %></div><% } %>
+            </div>
+            <button class="btn" type="submit">Send my request 💌</button>
+          </form>
+        <% } else { %>
+          <p class="flash warn" style="margin:0"><%= eligibility ? eligibility.reason : 'Not available.' %></p>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% if (!isGiver) { %>
+      <%- include('partials/report', { toyId: toy.id, userId: null, label: 'Report this listing', threshold: RULES.REPORTS_TO_HIDE_TOY }) %>
+    <% } %>
+  </div>
+</div>
+<%- include('partials/foot') %>

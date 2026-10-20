@@ -1,0 +1,43 @@
+<%- include('partials/head') %>
+<div class="card narrow">
+  <h1>Join your kampung 🏡</h1>
+  <p class="muted">Your postal code decides which neighbourhood you belong to. You'll only see and share toys with families in the same planning area.</p>
+  <form method="post" action="/signup" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field <%= errors.display_name ? 'has-error' : '' %>">
+      <label for="display_name">Your name <span class="hint">(shown to neighbours)</span></label>
+      <input type="text" id="display_name" name="display_name" value="<%= values.display_name || '' %>" maxlength="40" autocomplete="nickname" required>
+      <% if (errors.display_name) { %><div class="error"><%= errors.display_name %></div><% } %>
+    </div>
+    <div class="field <%= errors.email ? 'has-error' : '' %>">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="<%= values.email || '' %>" maxlength="120" autocomplete="email" required>
+      <% if (errors.email) { %><div class="error"><%= errors.email %></div><% } %>
+    </div>
+    <div class="field <%= errors.password ? 'has-error' : '' %>">
+      <label for="password">Password <span class="hint">(at least 10 characters)</span></label>
+      <input type="password" id="password" name="password" minlength="10" maxlength="128" autocomplete="new-password" required>
+      <% if (errors.password) { %><div class="error"><%= errors.password %></div><% } %>
+    </div>
+    <div class="grid-2">
+      <div class="field <%= errors.postal_code ? 'has-error' : '' %>">
+        <label for="postal_code">Postal code</label>
+        <input type="text" id="postal_code" name="postal_code" value="<%= values.postal_code || '' %>" inputmode="numeric" pattern="\d{6}" maxlength="6" autocomplete="postal-code" required>
+        <% if (errors.postal_code) { %><div class="error"><%= errors.postal_code %></div><% } %>
+      </div>
+      <div class="field <%= errors.address_line ? 'has-error' : '' %>">
+        <label for="address_line">Block and street</label>
+        <input type="text" id="address_line" name="address_line" value="<%= values.address_line || '' %>" maxlength="120" autocomplete="street-address" placeholder="Blk 201 Tampines St 21" required>
+        <% if (errors.address_line) { %><div class="error"><%= errors.address_line %></div><% } %>
+      </div>
+    </div>
+    <p class="small muted">Your address is never shown to other members. Only your planning area is.</p>
+    <div class="field <%= errors.guidelines ? 'has-error' : '' %>">
+      <label class="check"><input type="checkbox" name="guidelines" <%= values.guidelines ? 'checked' : '' %>> I'll give and ask in good faith: toys are blessings, never for resale.</label>
+      <% if (errors.guidelines) { %><div class="error"><%= errors.guidelines %></div><% } %>
+    </div>
+    <button class="btn" type="submit" style="width:100%">Create my account</button>
+  </form>
+  <p class="small muted" style="margin-top:1rem;text-align:center">Already a member? <a href="/login">Log in</a></p>
+</div>
+<%- include('partials/foot') %>

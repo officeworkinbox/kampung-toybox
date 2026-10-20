@@ -1,0 +1,25 @@
+{
+  "name": "kampung-toybox",
+  "version": "1.0.0",
+  "description": "Neighbours bless families nearby with pre-loved toys. Area-locked, verified, and community-tiered.",
+  "main": "src/server.js",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node scripts/seed.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "ejs": "^7.0.2",
+    "express": "^4.22.3",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "multer": "^2.4.0",
+    "zod": "^3.25.76"
+  }
+}

@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<section class="hero">
+  <div>
+    <span class="area-chip">🇸🇬 For Singapore neighbourhoods</span>
+    <h1 style="margin-top:.8rem">Outgrown toys become <span style="color:var(--coral)">blessings</span> for the family down the corridor.</h1>
+    <p class="lead">Kampung Toybox helps neighbours pass on pre-loved toys to families nearby. Free, local and personal, the way the kampung used to be.</p>
+    <div class="row">
+      <a class="btn" href="/signup">Join your kampung</a>
+      <a class="btn secondary" href="/login">I already have an account</a>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><b><%= stats.blessings %></b><span class="muted small">blessings handed over</span></div>
+      <div class="stat"><b><%= stats.available %></b><span class="muted small">toys waiting for a home</span></div>
+      <div class="stat"><b><%= stats.areas %></b><span class="muted small">neighbourhoods</span></div>
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    🧸🚂🪀<br>🧩🪁🦖
+    <div class="caption">"From our flat to yours" 💛</div>
+  </div>
+</section>
+
+<section class="stack" style="margin-top:1rem">
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="card step"><div class="num">1</div><h3>Verify your area</h3><p class="muted small">Sign up with your postal code. We confirm it with a one-time code and place you in your planning area.</p></div>
+    <div class="card step"><div class="num">2</div><h3>Share or browse</h3><p class="muted small">Post toys with photos, condition and age range. You only ever see toys from your own neighbourhood.</p></div>
+    <div class="card step"><div class="num">3</div><h3>Ask kindly</h3><p class="muted small">Tell the giver who the toy is for. The giver reads every request and picks a family.</p></div>
+    <div class="card step"><div class="num">4</div><h3>Hand over and grow</h3><p class="muted small">Meet up, show your handover code, leave kind feedback and grow your tier.</p></div>
+  </div>
+</section>
+
+<section class="stack" style="margin-top:2rem">
+  <h2>Grow with your kampung</h2>
+  <p class="muted">Tiers are earned by giving, completing handovers and kind feedback from neighbours. Never bought.</p>
+  <div class="row">
+    <% TIERS.forEach(t => { %><%- include('partials/tier-badge', { tier: t }) %><% }) %>
+  </div>
+</section>
+<%- include('partials/foot') %>

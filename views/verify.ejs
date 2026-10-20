@@ -1,0 +1,25 @@
+<%- include('partials/head') %>
+<div class="card narrow">
+  <h1>Confirm you live in <%= user.planning_area %> 📮</h1>
+  <p class="muted">We've sent a 6-digit code to the address you gave (<strong><%= user.address_line %>, Singapore <%= user.postal_code %></strong>). Enter it below to unlock your neighbourhood.</p>
+  <% if (devOtp) { %>
+    <div class="dev-otp" style="margin-bottom:1rem">
+      <div class="small"><strong>Demo mode:</strong> no SMS or letter service is connected, so your code is shown here. It is also printed in the server console.</div>
+      <code id="dev-otp-code"><%= devOtp %></code>
+    </div>
+  <% } %>
+  <% if (error) { %><div class="flash warn"><%= error %></div><% } %>
+  <form method="post" action="/verify">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field">
+      <label for="code">Verification code</label>
+      <input class="otp-input" type="text" id="code" name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" autocomplete="one-time-code" required>
+    </div>
+    <button class="btn" type="submit" style="width:100%">Verify my neighbourhood</button>
+  </form>
+  <form method="post" action="/verify/resend" style="margin-top:.8rem;text-align:center">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <button class="btn ghost small" type="submit">Didn't get it? Send a new code</button>
+  </form>
+</div>
+<%- include('partials/foot') %>

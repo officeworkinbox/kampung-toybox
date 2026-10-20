@@ -1,0 +1,59 @@
+<%- include('partials/head') %>
+<div class="row spread">
+  <div>
+    <h1>Blessings in <%= user.planning_area %> 🎁</h1>
+    <p class="muted" style="margin:0"><%= neighbours %> verified neighbour<%= neighbours === 1 ? '' : 's' %> sharing in your planning area. Toys from other areas stay in their own kampung.</p>
+  </div>
+  <a class="btn" href="/toys/new">＋ Share a toy</a>
+</div>
+
+<form class="filters" method="get" action="/toys" role="search">
+  <div class="q">
+    <label for="q" class="small">Search</label>
+    <input type="search" id="q" name="q" value="<%= filters.q %>" placeholder="Lego, puzzle, scooter…">
+  </div>
+  <div>
+    <label for="age" class="small">Age</label>
+    <select id="age" name="age">
+      <option value="">Any age</option>
+      <% AGE_RANGES.forEach(a => { %><option <%= filters.age === a ? 'selected' : '' %>><%= a %></option><% }) %>
+    </select>
+  </div>
+  <div>
+    <label for="condition" class="small">Condition</label>
+    <select id="condition" name="condition">
+      <option value="">Any condition</option>
+      <% CONDITIONS.forEach(c => { %><option <%= filters.condition === c ? 'selected' : '' %>><%= c %></option><% }) %>
+    </select>
+  </div>
+  <button class="btn secondary" type="submit">Filter</button>
+</form>
+
+<% if (!toys.length) { %>
+  <div class="card empty">
+    <div class="big">🪁</div>
+    <h2>No toys here yet</h2>
+    <p class="muted">Be the first to bless a family in <%= user.planning_area %>.</p>
+    <a class="btn" href="/toys/new">Share a toy</a>
+  </div>
+<% } else { %>
+  <div class="toy-grid">
+    <% toys.forEach(t => { %>
+      <a class="toy-card" href="/toys/<%= t.id %>">
+        <% if (t.photo_id) { %><img class="photo" src="/photos/<%= t.photo_id %>" alt="" loading="lazy"><% } else { %><div class="photo"></div><% } %>
+        <div class="body">
+          <h3><%= t.title %></h3>
+          <div class="tags">
+            <span class="tag"><%= t.age_range %></span>
+            <span class="tag cond"><%= t.condition %></span>
+            <% if (t.pending) { %><span class="tag status-pending"><%= t.pending %> asking</span><% } %>
+          </div>
+          <div class="giver-line">
+            <% if (t.giver_id === user.id) { %>Your listing<% } else { %>from <strong><%= t.giver_name %></strong> <%- include('partials/tier-badge', { tier: t.giverTier }) %><% } %>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+<%- include('partials/foot') %>

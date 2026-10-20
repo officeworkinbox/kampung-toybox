@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<div class="dash">
+  <div class="card">
+    <%- include('partials/progress', { trust, heading: n.display_name + ' · ' + n.planning_area }) %>
+    <div class="trust-line" style="margin-top:1rem">
+      <span>✅ Verified neighbour</span>
+      <span>🎁 <%= trust.stats.given %> given</span>
+      <span>🤝 <%= trust.stats.handovers %> handovers</span>
+      <span>⭐ <%= trust.stats.avgRating ? trust.stats.avgRating + ' from ' + trust.stats.reviews : 'no ratings yet' %></span>
+      <span>Member since <%= n.created_at.slice(0, 10) %></span>
+    </div>
+    <% if (n.suspended_at) { %><p class="flash warn" style="margin-top:1rem">This account is paused while our team reviews reports.</p><% } %>
+    <% if (n.id !== user.id) { %>
+      <div style="margin-top:1rem"><%- include('partials/report', { toyId: null, userId: n.id, label: 'Report this neighbour', threshold: 3 }) %></div>
+    <% } %>
+  </div>
+  <div class="stack">
+    <div class="card">
+      <h2>What neighbours say</h2>
+      <% if (!reviews.length) { %><p class="muted">No feedback yet.</p><% } %>
+      <% reviews.forEach(r => { %>
+        <div class="request-item">
+          <div class="row spread"><strong><%= r.from_name %></strong><span aria-label="<%= r.rating %> stars" style="color:var(--sun)"><%= '★'.repeat(r.rating) %><span style="color:#d9cdb9"><%= '★'.repeat(5 - r.rating) %></span></span></div>
+          <% if (r.comment) { %><p class="small" style="margin:.3rem 0 0"><%= r.comment %></p><% } %>
+        </div>
+      <% }) %>
+    </div>
+    <div class="card">
+      <h2>Toys on offer</h2>
+      <% if (!listings.length) { %><p class="muted">Nothing on offer right now.</p><% } %>
+      <% listings.forEach(t => { %>
+        <div class="list-item">
+          <% if (t.photo_id) { %><img src="/photos/<%= t.photo_id %>" alt=""><% } else { %><div class="ph">🧸</div><% } %>
+          <div><a href="/toys/<%= t.id %>"><strong><%= t.title %></strong></a><div class="small muted"><%= t.age_range %></div></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+<%- include('partials/foot') %>

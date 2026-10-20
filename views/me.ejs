@@ -1,0 +1,69 @@
+<%- include('partials/head') %>
+<h1>My Kampung 🏠</h1>
+<p class="muted"><%= user.display_name %> · verified neighbour in <strong><%= user.planning_area %></strong></p>
+
+<div class="dash">
+  <div class="stack">
+    <div class="card sun">
+      <%- include('partials/progress', { trust, heading: 'Your tier' }) %>
+      <div class="trust-line" style="margin-top:1rem">
+        <span>🎁 <%= trust.stats.given %> given</span>
+        <span>🧸 <%= trust.stats.received %> received</span>
+        <span>⭐ <%= trust.stats.avgRating ? trust.stats.avgRating + ' avg from ' + trust.stats.reviews : 'no ratings yet' %></span>
+        <span>📬 <%= active %> / <%= trust.tier.requestLimit %> open requests</span>
+      </div>
+      <p class="small" style="margin:.6rem 0 0"><a href="/tiers">How tiers work →</a></p>
+    </div>
+
+    <% if (givenNeedingFeedback.length || myRequests.some(r => r.status === 'completed' && !r.my_rating)) { %>
+      <div class="card leafy">
+        <h2>Say thanks 💛</h2>
+        <p class="small muted">Feedback builds trust in the kampung and helps neighbours grow their tier.</p>
+        <% givenNeedingFeedback.forEach(g => { %>
+          <%- include('partials/feedback-form', { requestId: g.id, who: g.requester_name, what: g.toy_title, role: 'received' }) %>
+        <% }) %>
+        <% myRequests.filter(r => r.status === 'completed' && !r.my_rating).forEach(r => { %>
+          <%- include('partials/feedback-form', { requestId: r.id, who: r.giver_name, what: r.toy_title, role: 'gave you' }) %>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <div class="row spread"><h2>Toys I'm asking for</h2><a class="small" href="/toys">Browse →</a></div>
+      <% if (!myRequests.length) { %><p class="muted">You haven't asked for any toys yet.</p><% } %>
+      <% myRequests.forEach(r => { %>
+        <div class="list-item">
+          <% if (r.photo_id) { %><img src="/photos/<%= r.photo_id %>" alt=""><% } else { %><div class="ph">🧸</div><% } %>
+          <div>
+            <div class="row spread"><a href="/toys/<%= r.toy_id %>"><strong><%= r.toy_title %></strong></a><span class="tag status-<%= r.status %>"><%= r.status.replace('_', ' ') %></span></div>
+            <div class="small muted">from <%= r.giver_name %></div>
+            <% if (r.status === 'approved') { %>
+              <div class="small" style="margin-top:.4rem">Show this code at handover:</div>
+              <div class="code-box" style="font-size:1.5rem"><%= r.handover_code %></div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row spread"><h2>Toys I'm giving</h2><a class="btn small" href="/toys/new">＋ Share</a></div>
+    <% if (!myToys.length) { %><p class="muted">Nothing shared yet. Got a toy your kids have outgrown?</p><% } %>
+    <% myToys.forEach(t => { %>
+      <div class="list-item">
+        <% if (t.photo_id) { %><img src="/photos/<%= t.photo_id %>" alt=""><% } else { %><div class="ph">🧸</div><% } %>
+        <div>
+          <div class="row spread"><a href="/toys/<%= t.id %>"><strong><%= t.title %></strong></a><span class="tag status-<%= t.status %>"><%= t.status %></span></div>
+          <div class="small muted">
+            <% if (t.hidden_at) { %><span style="color:var(--coral-dark)">Hidden after neighbour reports, pending review.</span>
+            <% } else if (t.status === 'reserved') { %>Approved for <strong><%= t.approved_for %></strong>, waiting for handover.
+            <% } else if (t.status === 'available') { %><%= t.pending ? t.pending + ' famil' + (t.pending === 1 ? 'y is' : 'ies are') + ' asking. Review now →' : 'No requests yet.' %>
+            <% } else { %>Blessing delivered 🎉<% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+<%- include('partials/foot') %>

@@ -1,0 +1,13 @@
+<form method="post" action="/requests/<%= requestId %>/feedback" class="request-item stack">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <div><strong><%= who %></strong> <span class="muted small"><%= role %> “<%= what %>”</span></div>
+  <fieldset class="stars" style="border:0;padding:0;margin:0">
+    <legend class="small muted" style="float:left;margin-right:.5rem">How did it go?</legend>
+    <% for (let s = 5; s >= 1; s--) { %>
+      <input type="radio" id="r<%= requestId %>-<%= s %>" name="rating" value="<%= s %>" <%= s === 5 ? 'checked' : '' %>>
+      <label for="r<%= requestId %>-<%= s %>" title="<%= s %> star<%= s > 1 ? 's' : '' %>">★</label>
+    <% } %>
+  </fieldset>
+  <input type="text" name="comment" maxlength="300" placeholder="A kind word (optional)" aria-label="Comment for <%= who %>">
+  <button class="btn leaf small" type="submit">Send feedback</button>
+</form>

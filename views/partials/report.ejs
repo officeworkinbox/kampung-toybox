@@ -1,0 +1,22 @@
+<details class="report">
+  <summary>🚩 <%= reported ? 'You reported this' : label %></summary>
+  <% if (!reported) { %>
+  <form method="post" action="/report" class="stack" style="margin-top:.6rem">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <% if (typeof toyId !== 'undefined' && toyId) { %><input type="hidden" name="toy_id" value="<%= toyId %>"><% } %>
+    <% if (typeof userId !== 'undefined' && userId) { %><input type="hidden" name="user_id" value="<%= userId %>"><% } %>
+    <div>
+      <label for="reason-<%= toyId || userId %>">What's wrong?</label>
+      <select name="reason" id="reason-<%= toyId || userId %>" required>
+        <% REPORT_REASONS.forEach(r => { %><option><%= r %></option><% }) %>
+      </select>
+    </div>
+    <div>
+      <label for="details-<%= toyId || userId %>">Details <span class="hint">(optional)</span></label>
+      <textarea name="details" id="details-<%= toyId || userId %>" maxlength="500" style="min-height:70px"></textarea>
+    </div>
+    <p class="small muted">Reports are private. When <%= threshold %> different neighbours report the same <%= typeof toyId !== 'undefined' && toyId ? 'listing it is hidden' : 'member their account is paused' %> until our team reviews it.</p>
+    <button class="btn secondary small" type="submit">Send report</button>
+  </form>
+  <% } %>
+</details>

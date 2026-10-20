@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+<div class="card" style="max-width:720px;margin:0 auto">
+  <h1>Share a blessing 🎀</h1>
+  <p class="muted">Your toy will be visible only to verified families in <strong><%= user.planning_area %></strong>. You choose who receives it.</p>
+  <form method="post" action="/toys" enctype="multipart/form-data" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="field <%= errors.title ? 'has-error' : '' %>">
+      <label for="title">What is it?</label>
+      <input type="text" id="title" name="title" value="<%= values.title || '' %>" maxlength="80" placeholder="Wooden train set with 20 tracks" required>
+      <% if (errors.title) { %><div class="error"><%= errors.title %></div><% } %>
+    </div>
+    <div class="field <%= errors.description ? 'has-error' : '' %>">
+      <label for="description">Tell families about it</label>
+      <textarea id="description" name="description" maxlength="1000" data-min="15" placeholder="What's included, any missing pieces, why your kids loved it…" required><%= values.description || '' %></textarea>
+      <div class="hint" data-counter-for="description"></div>
+      <% if (errors.description) { %><div class="error"><%= errors.description %></div><% } %>
+    </div>
+    <div class="grid-2">
+      <div class="field <%= errors.condition ? 'has-error' : '' %>">
+        <label for="condition">Condition</label>
+        <select id="condition" name="condition" required>
+          <option value="">Choose…</option>
+          <% CONDITIONS.forEach(c => { %><option <%= values.condition === c ? 'selected' : '' %>><%= c %></option><% }) %>
+        </select>
+        <% if (errors.condition) { %><div class="error"><%= errors.condition %></div><% } %>
+      </div>
+      <div class="field <%= errors.age_range ? 'has-error' : '' %>">
+        <label for="age_range">Best for ages</label>
+        <select id="age_range" name="age_range" required>
+          <option value="">Choose…</option>
+          <% AGE_RANGES.forEach(a => { %><option <%= values.age_range === a ? 'selected' : '' %>><%= a %></option><% }) %>
+        </select>
+        <% if (errors.age_range) { %><div class="error"><%= errors.age_range %></div><% } %>
+      </div>
+    </div>
+    <div class="field <%= errors.photos ? 'has-error' : '' %>">
+      <label for="photos">Photos <span class="hint">(1 to <%= RULES.MAX_PHOTOS %>, JPG/PNG/WEBP/GIF, up to <%= RULES.MAX_PHOTO_MB %> MB each)</span></label>
+      <input type="file" id="photos" name="photos" accept="image/jpeg,image/png,image/webp,image/gif" multiple data-preview="preview">
+      <div id="preview" class="row photo-preview" style="margin-top:.5rem"></div>
+      <% if (errors.photos) { %><div class="error"><%= errors.photos %></div><% } %>
+    </div>
+    <div class="card sun tight small" style="margin-bottom:1rem">🛡 Please check toys are clean, safe and not on a recall list. Toys are always free on Kampung Toybox.</div>
+    <button class="btn" type="submit">Post my blessing</button>
+  </form>
+</div>
+<%- include('partials/foot') %>
